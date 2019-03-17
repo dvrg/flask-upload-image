@@ -31,13 +31,7 @@ class PhotoForm(FlaskForm):
     photo = FileField(u'Photo', validators=[FileRequired(), FileAllowed(['jpeg','jpg','png'], 'Images only!')])
     submit = SubmitField(u'Simpan')
 
-
-@app.route('/')
-def index():
-    form = PhotoForm()
-    return render_template('upload.html', form=form)
-
-@app.route('/unggah', methods=['GET', 'POST'])
+@app.route('/', methods=['GET','POST'])
 def unggah(): 
     form = PhotoForm()
     print("Target Folder : " + target)
@@ -48,15 +42,9 @@ def unggah():
     
     if form.validate_on_submit(): 
         file = form.photo.data.filename
-        #print(file)
-
         ext = file.split('.')[-1]
         filename = "%s.%s" % (uuid.uuid4().hex, ext)
-        print('Nama File : ', filename)
-        #filename = secure_filename(form.photo.data.filename)
         destination = "/".join([target, filename])
-        #print("Filename : "+filename)
-        print("Destination : "+destination)
         form.photo.data.save(destination)
 
         photo = PhotoModel(photo_filename=filename, name=form.name.data)
@@ -67,7 +55,7 @@ def unggah():
 
     return render_template('upload.html', form=form)
 
-@app.route('/lihat')
+@app.route('/lihat', methods=['GET'])
 def lihat():
     photos = PhotoModel.query.all()
     return render_template('show.html', photos=photos)
@@ -102,7 +90,7 @@ def edit(id):
     form.name.data = data.name
     form.photo.data = data.photo_filename
 
-    return render_template('update.html', form=form)
+    return render_template('upload.html', form=form)
 
 @app.route('/hapus/<int:id>', methods=['GET','POST'])
 def hapus(id):

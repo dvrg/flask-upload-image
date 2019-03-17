@@ -14,7 +14,7 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <form method="POST" enctype="multipart/form-data" action="{{ url_for('unggah') }}">
+    <form method="POST" enctype="multipart/form-data">
         {{ form.csrf_token() }}
         <div>
             {{ form.name.label }}
