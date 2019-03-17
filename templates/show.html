@@ -8,11 +8,15 @@
 </head>
 <body>
     {% for photo in photos %}
+    {% if photos|length > 0 %}
     <div>
         <h1>{{ photo.name }}</h1>
         <img src="{{ url_for('static', filename='uploads/photos/'+photo.photo_filename) }}" alt="{{ photo.photo_filename }}" width="200px" >
-        <a href="{{ url_for('edit', id=photo.id) }}">Edit</a>
+        <a href="{{ url_for('edit', id=photo.id) }}">Edit</a> | <a href="{{ url_for('hapus', id=photo.id) }}">hapus</a> 
     </div>
+    {% else %}
+    <h1>None</h1>
+    {% endif %}
     {% endfor %}
     
 </body>
