@@ -1,5 +1,6 @@
 import os, uuid
-from flask import Flask, render_template, redirect, url_for, request
+from io import BytesIO
+from flask import Flask, render_template, redirect, url_for, request, send_file
 from wtforms import SubmitField, StringField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
@@ -22,6 +23,8 @@ class PhotoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(140))
     photo_filename = db.Column(db.String(254))
+    doc_filename = db.Column(db.String(254))
+    doc = db.Column(db.LargeBinary)
 
     def __repr__(self):
         return '<Filename %r>' % self.photo_filename
@@ -29,6 +32,7 @@ class PhotoModel(db.Model):
 class PhotoForm(FlaskForm):
     name = StringField(u'Kategori', validators=[DataRequired()])
     photo = FileField(u'Photo', validators=[FileRequired(), FileAllowed(['jpeg','jpg','png'], 'Images only!')])
+    doc = FileField(u'Dokumen Produk', validators=[FileRequired(), FileAllowed(['pdf'], 'PDF only!')])
     submit = SubmitField(u'Simpan')
 
 @app.route('/', methods=['GET','POST'])
@@ -41,13 +45,14 @@ def unggah():
         os.makedirs(target)
     
     if form.validate_on_submit(): 
+        doc = form.doc.data
         file = form.photo.data.filename
         ext = file.split('.')[-1]
         filename = "%s.%s" % (uuid.uuid4().hex, ext)
         destination = "/".join([target, filename])
         form.photo.data.save(destination)
 
-        photo = PhotoModel(photo_filename=filename, name=form.name.data)
+        photo = PhotoModel(photo_filename=filename, name=form.name.data, doc_filename=doc.filename, doc=doc.read())
         db.session.add(photo)
         db.session.commit()
 
@@ -59,6 +64,11 @@ def unggah():
 def lihat():
     photos = PhotoModel.query.all()
     return render_template('show.html', photos=photos)
+
+@app.route('/lihat/<int:id>', methods=['GET'])
+def lihat_data(id):
+    file_data = PhotoModel.query.filter_by(id=id).first_or_404()
+    return send_file(BytesIO(file_data.doc), attachment_filename=file_data.doc_filename, mimetype='application/pdf')
 
 @app.route('/edit/<int:id>', methods=['GET','POST'])
 def edit(id):
