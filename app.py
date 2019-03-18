@@ -78,11 +78,20 @@ def edit(id):
     data = PhotoModel.query.filter_by(id=id).first_or_404()
     
     if form.validate_on_submit():
-        
-        old = data.photo_filename
-        destination_del = "/".join([target, old])
-        os.remove(destination_del)
 
+        if data.doc_filename is not None:
+            old_doc = data.doc_filename
+            destination_del = "/".join([target, old_doc])
+            if os.path.exists(destination_del):
+                os.remove(destination_del)
+
+        if data.photo_filename is not None:
+            old = data.photo_filename
+            destination_del = "/".join([target, old])
+            if os.path.exists(destination_del):
+                os.remove(destination_del)
+
+        file2 = form.doc.data
         file = form.photo.data.filename
         ext = file.split('.')[-1]
         filename = "%s.%s" % (uuid.uuid4().hex, ext)
@@ -91,6 +100,8 @@ def edit(id):
 
         data.photo_filename=filename
         data.name=form.name.data
+        data.doc_filename=file2.filename
+        data.doc=file2.read()
 
         db.session.commit()
         return redirect('lihat')
