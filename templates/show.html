@@ -7,13 +7,13 @@
     <title>Document</title>
 </head>
 <body>
-    {% for photo in photos %}
-    {% if photos|length > 0 %}
+    {% for d in data %}
+    {% if data|length > 0 %}
     <div>
-        <h1>{{ photo.name }}</h1>
-        <img src="{{ url_for('static', filename='uploads/photos/'+photo.photo_filename) }}" alt="{{ photo.photo_filename }}" width="200px" >
-        {% if photo.doc_filename is not none %} <a href="{{ url_for('lihat_data', id=photo.id) }}" target="_blank">Download</a> | <a href="{{ url_for('edit', id=photo.id) }}">Edit</a> | <a href="{{ url_for('hapus', id=photo.id) }}">hapus</a>
-        {% else %} <a href="{{ url_for('edit', id=photo.id) }}">Edit</a> | <a href="{{ url_for('hapus', id=photo.id) }}">hapus</a> {% endif %}
+        <h1>{{ d.name }}</h1>
+        <img src="{{ url_for('load_gambar3', filename=d.photo_filename) }}" alt="{{ d.photo_filename }}" width="200px" >
+        {% if d.doc_filename is not none %} <a href="{{ url_for('lihat_data', filename=d.doc_filename) }}" target="_blank">Download</a> | <a href="{{ url_for('load_gambar3', filename=d.photo_filename) }}">Gambar</a> | <a href="{{ url_for('edit', id=d.id) }}">Edit</a> | <a href="{{ url_for('hapus', id=d.id) }}">hapus</a>
+        {% else %} <a href="{{ url_for('edit', id=d.id) }}">Edit</a> | <a href="{{ url_for('hapus', id=d.id) }}">hapus</a> {% endif %}
     </div>
     {% else %}
     <h1>None</h1>

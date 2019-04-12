@@ -22,11 +22,11 @@
         </div>
         <div>
             {{ form.photo.label }}
-            {{ form.photo() }}
+            {{ form.photo(accept="image/*") }}
         </div>
         <div>
             {{ form.doc.label }}
-            {{ form.doc() }}
+            {{ form.doc(accept="application/pdf") }}
         </div>
         {{ form.submit() }}
     </form>
